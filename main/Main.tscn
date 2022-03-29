@@ -1,0 +1,50 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://entities/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://main/Main.gd" type="Script" id=2]
+[ext_resource path="res://moving_background/MovingBackground.tscn" type="PackedScene" id=3]
+[ext_resource path="res://HUD/HUD.tscn" type="PackedScene" id=4]
+[ext_resource path="res://entities/GreenPipe.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/audio/die.wav" type="AudioStream" id=6]
+[ext_resource path="res://assets/audio/point.wav" type="AudioStream" id=7]
+[ext_resource path="res://assets/audio/hit.wav" type="AudioStream" id=8]
+
+[sub_resource type="Curve2D" id=1]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, 410.779, 507.069, 0, 0, 0, 0, 412.7, 364.901 )
+}
+
+[node name="Main" type="Node"]
+script = ExtResource( 2 )
+GreenPipe = ExtResource( 5 )
+
+[node name="MovingBackground" parent="." instance=ExtResource( 3 )]
+
+[node name="PipeSpawn" type="Path2D" parent="."]
+curve = SubResource( 1 )
+
+[node name="PipeSpawnLocation" type="PathFollow2D" parent="PipeSpawn"]
+position = Vector2( 410.779, 507.069 )
+rotation = -1.5573
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 138.248, 247.762 )
+
+[node name="HUD" parent="." instance=ExtResource( 4 )]
+
+[node name="SpawnPipesTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+
+[node name="PointSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+
+[node name="HitSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 8 )
+
+[connection signal="screen_exited" from="Player" to="." method="pipe_hit"]
+[connection signal="game_started" from="HUD" to="." method="_on_HUD_game_started"]
+[connection signal="timeout" from="SpawnPipesTimer" to="." method="_on_SpawnPipesTimer_timeout"]
